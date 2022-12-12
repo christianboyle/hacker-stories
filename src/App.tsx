@@ -75,10 +75,10 @@ type SearchProps = {
 }
 
 const Search: React.FC<SearchProps> = ({ search, onSearch }) => (
-  <div>
+  <>
     <label htmlFor='search'>Search: </label>
     <input id='search' type='text' value={search} onChange={onSearch} />
-  </div>
+  </>
 )
 
 type ListProps = {
