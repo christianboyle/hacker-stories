@@ -11,42 +11,52 @@ type Story = {
 
 type Stories = Story[]
 
-const App = () => {
-  const stories = [
-    {
-      title: 'React',
-      url: 'https://reactjs.org/',
-      author: 'Jordan Walke',
-      num_comments: 3,
-      points: 4,
-      objectID: 0
-    },
-    {
-      title: 'Redux',
-      url: 'https://redux.js.org/',
-      author: 'Dan Abramov, Andrew Clark',
-      num_comments: 2,
-      points: 5,
-      objectID: 1
-    }
-  ]
+const initialStories = [
+  {
+    title: 'React',
+    url: 'https://reactjs.org/',
+    author: 'Jordan Walke',
+    num_comments: 3,
+    points: 4,
+    objectID: 0
+  },
+  {
+    title: 'Redux',
+    url: 'https://redux.js.org/',
+    author: 'Dan Abramov, Andrew Clark',
+    num_comments: 2,
+    points: 5,
+    objectID: 1
+  }
+]
 
-  const useStorageState = (
-    key: string,
-    initialState: string
-  ): [string, (newValue: string) => void] => {
-    const [value, setValue] = React.useState(
-      localStorage.getItem(key) || initialState
+const useStorageState = (
+  key: string,
+  initialState: string
+): [string, (newValue: string) => void] => {
+  const [value, setValue] = React.useState(
+    localStorage.getItem(key) || initialState
+  )
+
+  React.useEffect(() => {
+    localStorage.setItem(key, value)
+  }, [value, key])
+
+  return [value, setValue]
+}
+
+const App = () => {
+  const [searchTerm, setSearchTerm] = useStorageState('search', 'React')
+
+  const [stories, setStories] = React.useState(initialStories)
+
+  const handleRemoveStory = (item: Story) => {
+    const newStories = stories.filter(
+      (story) => item.objectID !== story.objectID
     )
 
-    React.useEffect(() => {
-      localStorage.setItem(key, value)
-    }, [value, key])
-
-    return [value, setValue]
+    setStories(newStories)
   }
-
-  const [searchTerm, setSearchTerm] = useStorageState('search', 'React')
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value)
@@ -71,7 +81,7 @@ const App = () => {
 
       <hr />
 
-      <List list={searchedStories} />
+      <List list={searchedStories} onRemoveItem={handleRemoveStory} />
     </div>
   )
 }
@@ -118,21 +128,23 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({
 
 type ListProps = {
   list: Stories
+  onRemoveItem: (item: Story) => void
 }
 
-const List: React.FC<ListProps> = ({ list }) => (
+const List: React.FC<ListProps> = ({ list, onRemoveItem }) => (
   <ul>
     {list.map((item) => (
-      <Item key={item.objectID} item={item} />
+      <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
     ))}
   </ul>
 )
 
 type ItemProps = {
   item: Story
+  onRemoveItem: (item: Story) => void
 }
 
-const Item: React.FC<ItemProps> = ({ item }) => (
+const Item: React.FC<ItemProps> = ({ item, onRemoveItem }) => (
   <li>
     <span>
       <a href={item.url}>{item.title}</a>
@@ -140,6 +152,11 @@ const Item: React.FC<ItemProps> = ({ item }) => (
     <span>{item.author}</span>
     <span>{item.num_comments}</span>
     <span>{item.points}</span>
+    <span>
+      <button type='button' onClick={() => onRemoveItem(item)}>
+        Dismiss
+      </button>
+    </span>
   </li>
 )
 
