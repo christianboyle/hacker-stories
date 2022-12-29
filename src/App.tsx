@@ -1,7 +1,7 @@
 import * as React from 'react'
 import axios from 'axios'
 
-import styles from './App.module.css'
+import './App.css'
 
 type Story = {
   title: string
@@ -142,8 +142,8 @@ const App = () => {
   }
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.headlinePrimary}>My Hacker Stories</h1>
+    <div className='container'>
+      <h1 className='headline-primary'>My Hacker Stories</h1>
 
       <SearchForm
         searchTerm={searchTerm}
@@ -175,7 +175,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
   onSearchInput,
   onSearchSubmit
 }) => (
-  <form onSubmit={onSearchSubmit} className={styles.searchForm}>
+  <form onSubmit={onSearchSubmit} className='search-form'>
     <InputWithLabel
       id='search'
       value={searchTerm}
@@ -188,7 +188,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
     <button
       type='submit'
       disabled={!searchTerm}
-      className={`${styles.button} ${styles.buttonLarge}`}
+      className='button button_large'
     >
       Submit
     </button>
@@ -222,7 +222,7 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({
 
   return (
     <>
-      <label htmlFor={id} className={styles.label}>
+      <label htmlFor={id} className='label'>
         {children}
       </label>
       &nbsp;
@@ -232,7 +232,6 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({
         type={type}
         value={value}
         onChange={onInputChange}
-        className={styles.input}
       />
     </>
   )
@@ -257,7 +256,7 @@ type ItemProps = {
 }
 
 const Item: React.FC<ItemProps> = ({ item, onRemoveItem }) => (
-  <li className={styles.item}>
+  <li className='item'>
     <span style={{ width: '40%' }}>
       <a href={item.url}>{item.title}</a>
     </span>
@@ -268,7 +267,7 @@ const Item: React.FC<ItemProps> = ({ item, onRemoveItem }) => (
       <button
         type='button'
         onClick={() => onRemoveItem(item)}
-        className={`${styles.button} ${styles.buttonSmall}`}
+        className='button button_small'
       >
         Dismiss
       </button>
