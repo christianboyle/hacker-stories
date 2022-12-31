@@ -1,6 +1,8 @@
 import * as React from 'react'
 import axios from 'axios'
-import styled from 'styled-components';
+import styled from 'styled-components'
+
+import { ReactComponent as Check } from './check.svg'
 
 type Story = {
   title: string
@@ -99,19 +101,19 @@ const StyledContainer = styled.div`
   background: #83a4d4;
   background: linear-gradient(to left, #b6fbff, #83a4d4);
   color: #171212;
-`;
+`
 
 const StyledHeadlinePrimary = styled.h1`
   font-size: 48px;
   font-weight: 300;
   letter-spacing: 2px;
-`;
+`
 
 const StyledItem = styled.li`
   display: flex;
   align-items: center;
   padding-bottom: 5px;
-`;
+`
 
 const StyledColumn = styled.span`
   padding: 0 5px;
@@ -123,7 +125,7 @@ const StyledColumn = styled.span`
     color: inherit;
   }
   width: ${(props) => props.width};
-`;
+`
 
 const StyledButton = styled.button`
   background: transparent;
@@ -135,36 +137,39 @@ const StyledButton = styled.button`
     background: #171212;
     color: #ffffff;
   }
-`;
+`
 
 const StyledButtonSmall = styled(StyledButton)`
   padding: 5px;
-`;
+  &:hover svg path {
+    fill: #ffffff;
+    stroke: #ffffff;
+  }
+`
 
 const StyledButtonLarge = styled(StyledButton)`
   padding: 10px;
-`;
+`
 
 const StyledSearchForm = styled.form`
   padding: 10px 0 20px 0;
   display: flex;
   align-items: baseline;
-`;
+`
 
 const StyledLabel = styled.label`
   border-top: 1px solid #171212;
   border-left: 1px solid #171212;
   padding-left: 5px;
   font-size: 24px;
-`;
+`
 
 const StyledInput = styled.input`
   border: none;
   border-bottom: 1px solid #171212;
   background-color: transparent;
   font-size: 24px;
-`;
-
+`
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React')
@@ -247,7 +252,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
   onSearchInput,
   onSearchSubmit
 }) => (
-  <StyledSearchForm  onSubmit={onSearchSubmit}>
+  <StyledSearchForm onSubmit={onSearchSubmit}>
     <InputWithLabel
       id='search'
       value={searchTerm}
@@ -257,10 +262,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
       <strong>Search:</strong>
     </InputWithLabel>
 
-    <StyledButtonLarge 
-      type='submit'
-      disabled={!searchTerm}
-    >
+    <StyledButtonLarge type='submit' disabled={!searchTerm}>
       Submit
     </StyledButtonLarge>
   </StyledSearchForm>
@@ -293,9 +295,7 @@ const InputWithLabel: React.FC<InputWithLabelProps> = ({
 
   return (
     <>
-      <StyledLabel  htmlFor={id}>
-        {children}
-      </StyledLabel>
+      <StyledLabel htmlFor={id}>{children}</StyledLabel>
       &nbsp;
       <StyledInput
         ref={inputRef}
@@ -328,18 +328,15 @@ type ItemProps = {
 
 const Item: React.FC<ItemProps> = ({ item, onRemoveItem }) => (
   <StyledItem>
-    <StyledColumn  style={{ width: '40%' }}>
+    <StyledColumn style={{ width: '40%' }}>
       <a href={item.url}>{item.title}</a>
     </StyledColumn>
-    <StyledColumn  style={{ width: '30%' }}>{item.author}</StyledColumn>
-    <StyledColumn  style={{ width: '10%' }}>{item.num_comments}</StyledColumn>
-    <StyledColumn  style={{ width: '10%' }}>{item.points}</StyledColumn>
-    <StyledColumn  style={{ width: '10%' }}>
-      <StyledButtonSmall
-        type='button'
-        onClick={() => onRemoveItem(item)}
-      >
-        Dismiss
+    <StyledColumn style={{ width: '30%' }}>{item.author}</StyledColumn>
+    <StyledColumn style={{ width: '10%' }}>{item.num_comments}</StyledColumn>
+    <StyledColumn style={{ width: '10%' }}>{item.points}</StyledColumn>
+    <StyledColumn style={{ width: '10%' }}>
+      <StyledButtonSmall type='button' onClick={() => onRemoveItem(item)}>
+        <Check height='18px' width='18px' />
       </StyledButtonSmall>
     </StyledColumn>
   </StyledItem>
