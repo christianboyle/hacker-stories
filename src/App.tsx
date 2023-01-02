@@ -116,7 +116,11 @@ const StyledItem = styled.li`
   padding-bottom: 5px;
 `
 
-const StyledColumn = styled.span`
+interface ButtonProps {
+  width: string
+}
+
+const StyledColumn = styled.span<ButtonProps>`
   padding: 0 5px;
   white-space: nowrap;
   overflow: hidden;
@@ -372,13 +376,13 @@ type ItemProps = {
 
 const Item: React.FC<ItemProps> = ({ item, onRemoveItem }) => (
   <StyledItem>
-    <StyledColumn style={{ width: '40%' }}>
+    <StyledColumn width='40%'>
       <a href={item.url}>{item.title}</a>
     </StyledColumn>
-    <StyledColumn style={{ width: '30%' }}>{item.author}</StyledColumn>
-    <StyledColumn style={{ width: '10%' }}>{item.num_comments}</StyledColumn>
-    <StyledColumn style={{ width: '10%' }}>{item.points}</StyledColumn>
-    <StyledColumn style={{ width: '10%' }}>
+    <StyledColumn width='30%'>{item.author}</StyledColumn>
+    <StyledColumn width='10%'>{item.num_comments}</StyledColumn>
+    <StyledColumn width='10%'>{item.points}</StyledColumn>
+    <StyledColumn width='10%'>
       <StyledButtonSmall type='button' onClick={() => onRemoveItem(item)}>
         <Check height='18px' width='18px' />
       </StyledButtonSmall>
