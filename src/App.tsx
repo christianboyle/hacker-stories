@@ -2,8 +2,33 @@ import * as React from 'react'
 import axios from 'axios'
 import styled from 'styled-components'
 import { sortBy } from 'lodash'
-
 import { ReactComponent as Check } from './check.svg'
+
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query='
+
+const getUrl = (searchTerm) => `${API_ENDPOINT}${searchTerm}`
+
+const extractSearchTerm = (url) => url.replace(API_ENDPOINT, '')
+
+const getLastSearches = (urls) =>
+  urls
+    .reduce((result, url, index) => {
+      const searchTerm = extractSearchTerm(url)
+
+      if (index === 0) {
+        return result.concat(searchTerm)
+      }
+
+      const previousSearchTerm = result[result.length - 1]
+
+      if (searchTerm === previousSearchTerm) {
+        return result
+      } else {
+        return result.concat(searchTerm)
+      }
+    }, [])
+    .slice(-6)
+    .slice(0, -1)
 
 type Story = {
   title: string
@@ -94,8 +119,6 @@ const useStorageState = (
   return [value, setValue]
 }
 
-const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query='
-
 const StyledContainer = styled.div`
   height: 100vw;
   padding: 20px;
@@ -179,7 +202,7 @@ const StyledInput = styled.input`
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React')
 
-  const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`)
+  const [urls, setUrls] = React.useState([getUrl(searchTerm)])
 
   const [stories, dispatchStories] = React.useReducer(storiesReducer, {
     data: [],
@@ -191,20 +214,26 @@ const App = () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' })
 
     try {
-      const result = await axios.get(url)
+      const lastUrl = urls[urls.length - 1]
+      const result = await axios.get(lastUrl)
+
       dispatchStories({
         type: 'STORIES_FETCH_SUCCESS',
         payload: result.data.hits
       })
-      console.log(result)
     } catch {
       dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
     }
-  }, [url])
+  }, [urls])
 
   React.useEffect(() => {
     handleFetchStories()
   }, [handleFetchStories])
+
+  const handleSearch = (searchTerm) => {
+    const url = getUrl(searchTerm)
+    setUrls(urls.concat(url))
+  }
 
   const handleRemoveStory = (item: Story) => {
     dispatchStories({
@@ -218,10 +247,18 @@ const App = () => {
   }
 
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    setUrl(`${API_ENDPOINT}${searchTerm}`)
+    handleSearch(searchTerm)
 
     event.preventDefault()
   }
+
+  const handleLastSearch = (searchTerm) => {
+    setSearchTerm(searchTerm)
+
+    handleSearch(searchTerm)
+  }
+
+  const lastSearches = getLastSearches(urls)
 
   return (
     <StyledContainer>
@@ -231,6 +268,11 @@ const App = () => {
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
+      />
+
+      <LastSearches
+        lastSearches={lastSearches}
+        onLastSearch={handleLastSearch}
       />
 
       <hr />
@@ -245,6 +287,20 @@ const App = () => {
     </StyledContainer>
   )
 }
+
+const LastSearches = ({ lastSearches, onLastSearch }) => (
+  <>
+    {lastSearches.map((searchTerm, index) => (
+      <button
+        key={searchTerm + index}
+        type='button'
+        onClick={() => onLastSearch(searchTerm)}
+      >
+        {searchTerm}
+      </button>
+    ))}
+  </>
+)
 
 type SearchFormProps = {
   searchTerm: string
